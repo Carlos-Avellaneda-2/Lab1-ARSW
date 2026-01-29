@@ -32,14 +32,14 @@ public class CountThread extends Thread {
 }
 ```
 
-#### 2. Clase CountMainThreads (Método main) 
+#### 2. Clase CountThreadsMain (Método main) 
 Se completó el método main con 3 hilos:
 
 - **Hilo 1**: Rango [0..99]
 - **Hilo 2**: Rango [99..199]  
 - **Hilo 3**: Rango [200..299]
 
-**Ubicación**: `src/main/java/edu/eci/arsw/threads/CountMainThreads.java` 
+**Ubicación**: `src/main/java/edu/eci/arsw/threads/CountThreadsMain.java` 
 
 ### Análisis: start() vs run()
 
@@ -60,7 +60,7 @@ Se completó el método main con 3 hilos:
 ##  II - Ejercicio Black List Search
 
 
-#### 1. Clase BlackListThread (Hilos de búsqueda) ✓
+#### 1. Clase BlackListThread (Hilos de búsqueda) 
 
 Se creó la clase `BlackListThread` que extiende `Thread` para realizar búsquedas paralelas:
 
@@ -93,7 +93,7 @@ public class BlackListThread extends Thread {
 
 #### 2. Método checkHost() paralelizado ✓
 
-Se modificó `HostBlackListsValidator.checkHost()` para aceptar parámetro N (número de hilos):
+Se creo la clase `HostBlackListsValidatorThread` basada en `HostBlackListsValidator` modificando el metodo  `checkHost()` para aceptar parámetro N (número de hilos):
 
 **Funcionamiento:**
 1. **División del espacio**: Divide 80,000 servidores entre N hilos
@@ -106,9 +106,9 @@ Se modificó `HostBlackListsValidator.checkHost()` para aceptar parámetro N (n�
 
 **Manejo de números impares:**
 - El último hilo recibe índices restantes si la división no es exacta
-- Ejemplo: 80,000 ÷ 3 = 26,666 cada uno, último obtiene 26,668
+- Ejemplo: 80,000 / 3 = 26,666 cada uno, último obtiene 26,668
 
-**Ubicación**: `src/main/java/edu/eci/arsw/blacklistvalidator/HostBlackListsValidator.java`
+**Ubicación**: `src/main/java/edu/eci/arsw/blacklistvalidator/HostBlackListsValidatorThread.java`
 
 ```java
 public List<Integer> checkHost(String ipaddress, int numThreads) {
@@ -136,26 +136,19 @@ public List<Integer> checkHost(String ipaddress, int numThreads) {
 }
 ```
 
-**Método sobrecargado:**
-```java
-public List<Integer> checkHost(String ipaddress) {
-    return checkHost(ipaddress, Runtime.getRuntime().availableProcessors());
-}
-```
-Usa por defecto el número de núcleos disponibles.
 
-#### 3. Clase CountThreadsMain (Testing) 
+#### 3. Clase BlackListThreadsMain (Testing) 
 
-Clase de prueba que valida la solución:
+Clase de prueba que valida la solución paralelizada:
 - Prueba con diferentes números de hilos (1, 2, 4, 8)
 - Mide tiempo de ejecución para cada configuración
-- Valida las 3 IPs del laboratorio
+- Valida las 3 IPs del laboratorio (200.24.34.55, 202.24.34.55, 212.24.24.55)
 
-**Ubicación**: `src/main/java/edu/eci/arsw/threads/CountThreadsMain.java`
+**Ubicación**: `src/main/java/edu/eci/arsw/threads/BlackListThreadsMain.java`
 
 ---
 
-## II.I — Terminar la búsqueda anticipadamente (NO implementar)
+## II.I — Terminar la búsqueda anticipadamente 
 
 **Problema**: La implementación actual revisa todas las 80,000 listas incluso después de encontrar 5 ocurrencias, desperdiciando recursos.
 
@@ -176,6 +169,8 @@ Introducir un **contador compartido atómico** (`AtomicInteger`) que todos los h
 
 Se ejecutaron experimentos de timing para validar las direcciones IP con la IP dispersa `202.24.34.55`, midiendo tiempos de ejecución en diferentes configuraciones de hilos.
 
+**Clase de prueba utilizada**: `src/main/java/edu/eci/arsw/threads/BlackListThreadMain3.java`
+
 ### Resultados de Medición
 
 A continuación se presentan los datos recolectados de la ejecución de benchmarks:
@@ -190,7 +185,9 @@ A continuación se presentan los datos recolectados de la ejecución de benchmar
 | 50 | 2,951 | [29, 10034, 20200, 31000, 70500] | 80,000 |
 | 100 | 1,544 | [29, 10034, 20200, 31000, 70500] | 80,000 |
 
-**Observación**: Se encontraron 5 ocurrencias de la IP `202.24.34.55` en los índices: 29, 10034, 20200, 31000, 70500 — es decir, cumple el umbral de "NOT trustworthy" (≥5).
+### Hipotesis
+
+Pese a no tener un procesador con tantos nucleos para realizar una cantidad de hilos increibles elñ programa se ejecuta con normalidad ya  que el procesador es capaz de organizar los distintos hilos y procesos a tratar haciendo uso de mas de 1 hilo en cada nucleo del procesador.
 
 ### Monitoreo jVisualVM
 
@@ -201,7 +198,6 @@ Captura del monitor jVisualVM durante la ejecución de los benchmarks:
 En la captura se observa:
 - Consumo de **CPU** es poco a comparacion del uso de la memoria **RAM**.
 - Uso de memoria se incrementa moderadamente (A medida que va usando mas hilos se hace mas costoso para la **RAM** realizar el problema).
-- Picos de **CPU** coinciden con las ejecuciones de mayor paralelismo (50 y 100 hilos).
 
 ### Gráfica de Desempeño
 
@@ -211,7 +207,7 @@ La gráfica muestra:
 - **Tendencia descendente fuerte**: El tiempo se reduce drásticamente de 1 hilo a 8 hilos.
 - **Mejora moderada de 8 a 50 hilos**: La reducción de tiempo sigue pero a menor ritmo.
 - **Meseta relativa de 50 a 100 hilos**: La mejora es pequeña, sugiriendo overhead de coordinación y límites de paralelismo.
-- **Speedup máximo observado**: ~93x (143,080 ms ÷ 1,544 ms) con 100 hilos.
+- **Speedup máximo observado**: aprox 93x (143,080 ms / 1,544 ms) con 100 hilos.
 
 ---
 

@@ -16,6 +16,11 @@ public class CountThreadsMain {
         CountThread Segundo = new CountThread(99,199,"segundo");
         CountThread Tercero = new CountThread(200,299,"tercero");
 
+        System.out.println("=== USANDO run() ===");
+        Primero.run();
+        Segundo.run();
+        Tercero.run();
+
         System.out.println("=== USANDO start() ===");
         Primero.start();
         Segundo.start();

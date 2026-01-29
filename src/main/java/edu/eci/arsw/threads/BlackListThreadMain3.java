@@ -14,7 +14,7 @@ public class BlackListThreadMain3 {
         int nucleos = runtime.availableProcessors();
         int[] threadCounts = {1, nucleos, nucleos*2, 50, 100};
 
-        System.out.println("=== Testing IP with many coincidences ===");
+        System.out.println("=== Buscando coincidencias en la ip  ===");
         testIP("202.24.34.55",validator,threadCounts);
     }
 
