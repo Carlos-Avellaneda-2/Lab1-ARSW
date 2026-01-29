@@ -91,7 +91,7 @@ public class BlackListThread extends Thread {
 }
 ```
 
-#### 2. Método checkHost() paralelizado ✓
+#### 2. Método checkHost() paralelizado 
 
 Se creo la clase `HostBlackListsValidatorThread` basada en `HostBlackListsValidator` modificando el metodo  `checkHost()` para aceptar parámetro N (número de hilos):
 
