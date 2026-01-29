@@ -33,10 +33,8 @@ public class BlackListThread extends Thread {
     
     @Override
     public void run() {
-        HostBlacklistsDataSourceFacade skds;
-        skds = HostBlacklistsDataSourceFacade.getInstance();
+        HostBlacklistsDataSourceFacade skds = HostBlacklistsDataSourceFacade.getInstance();
 
-        // Search in the assigned segment
         for (int i = initIndex; i < endIndex; i++) {
             if (skds.isInBlackListServer(i, ipaddress)) {
                 blackListOcurrences.add(i);
